@@ -1,0 +1,40 @@
+﻿<table id="tblStudents" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+           <th>First Name</th>
+           <th>last Name</th>
+           <th>Major</th>
+           <th>Report To</th>
+           <th>Action</th>
+        </tr>
+    </thead>
+</table>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var tr;
+        $.getJSON("/Home/GetAllStudents", function (json) {
+            $.each(json, function (i, std) {
+                var stdid = std.StudentID;
+                tr = $('<tr/>');
+                tr.append("<td class='FirstName'>" + std.FirstName + "</td>");
+                tr.append("<td class='LastName'>" + std.LastName + "</td>");
+                tr.append("<td class='Major'>" + std.Major + "</td>");
+                tr.append("<td class='ReportsTo'>" + std.ReportsTo + "</td>");
+                tr.append("<td>" + "<a Onclick='return false;' class='DeleteCss' href=/Home/DeleteStudent/" + stdid + "> Delete</a>" + " | " + "<a class='EditCss' href=/Home/UpdateStudent/" + stdid + ">Edit</a>" + "</td>");
+                $('#tblStudents').append(tr);
+            });
+        });
+        $('#tblStudents').on('çlick', 'td a.DeleteCss', function () {
+            var deleteUrl = $(this).attr("href");
+            if (confirm("Are you sure want to delete?")) {
+                $.ajax({
+                    url: deleteUrl, dataType: "json", type: "POST", contentType: "application/json",
+                    error: function (err) { alert('Unable to delete record.'); },
+                    success: function (response) { $('#tblStudents').load("/Home/StudentDetails"); }
+                });
+            }
+
+        });
+    });
+</script>
